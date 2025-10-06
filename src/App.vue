@@ -3,20 +3,67 @@ import Welcome from './components/pages/Welcome.vue';
 import Dashboard from './components/pages/Dashboard.vue';
 import Layout from './components/layouts/Layout.vue';
 import Workout from './components/pages/Workout.vue'
+import { ref } from 'vue';
+import { workoutProgram } from './utils';
 
-const selectedDisplay = 3
+const defaultData = {}
+for (let workoutIdx in workoutProgram) {
+   const workoutData = workoutProgram[workoutIdx]
+   //create a for loop where we iterate over every workout
+   defaultData[workoutIdx] = {} // initialize the workout data obj
+
+   //nested loop to loop over every exercise within a workout, and initialize its input value to an empty string
+   for (let e of workoutData.workout) {
+      defaultData[workoutIdx][e.name] = ""
+   }
+}
+console.log(defaultData)
+const selectedDisplay = ref(1)
+const data = ref(defaultData)
+const selectedWorkout = ref(-1)
+
+const isWorkoutComplete = computed(() => {
+   const currWorkout = data.value?.[selectedWorkout.value]
+   if (!currWorkout) { return false} // guard clause to exit function
+
+   const isCompleteCheck = Object.values(currWorkout).every(ex => !!ex)
+   console.log("ISCOMPLETE: ", isCompleteCheck)
+   return isCompleteCheck
+})
+
+function handleChangeDisplay(idx) {
+   selectedDisplay.value = idx
+}
+
+function handleSelectWorkout(idx) {
+   selectedDisplay.value = 3
+   selectedWorkout.value = idx
+}
+
+function handleSaveWorkout() {
+   //save the current data snapshot to localstorage so that we can retrieve it next time
+   localStorage.setItem("workouts", JSON.stringify(data.value))
+   
+   //show the dashboard
+   selectedDisplay.value = 2
+
+   //deselect a workout
+   selectedWorkout = -1
+}
+
+
 </script>
 
 <template>
    <Layout>
    <!-- PAGE 1 -->
-    <Welcome v-if="selectedDisplay == 1" />
+    <Welcome :handleChangeDisplay="handleChangeDisplay" v-if="selectedDisplay == 1" />
 
    <!-- PAGE 2 -->
-    <Dashboard v-if="selectedDisplay == 2" />
+    <Dashboard :handleSelectWorkout="handleSelectWorkout" v-if="selectedDisplay == 2" />
 
    <!-- PAGE 3 -->
-    <Workout v-if="selectedDisplay == 3" />
+    <Workout :data="data" :selectedWorkout="selectedWorkout" v-if="workoutProgram?.[selectedWorkout]" />
    </Layout>  
     
 

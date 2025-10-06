@@ -1,10 +1,35 @@
 <script setup>
-import { workoutProgram } from '../../utils';
-const selectedWorkout = 4
+import Portal from '../Portal.vue';
+import { workoutProgram, exerciseDescriptions } from '../../utils';
+import { computed, ref } from 'vue';
+
+const { data, selectedWorkout } = defineProps({
+    data: Object,
+    selectedWorkout: Number
+})
+
 const { workout, warmup } = workoutProgram[selectedWorkout]
+// let selectedExercise = null //this wont work because we need a stateful variable so that the UI knows it needs to rerender to reflect any changes in the javascript
+let selectedExercise = ref(null)
+console.log(selectedExercise) 
+const exerciseDescription = computed(() => exerciseDescriptions[selectedExercise.value])
+
+    function handleCloseModal() {
+    selectedExercise.value = null
+    }
 </script>
 
 <template>
+    <Portal jambo="bwana" :handleCloseModal="handleCloseModal" v-if="selectedExercise">
+        <div class="exercise-description">
+            <h3>{{ selectedExercise }}</h3>
+            <div>
+                <small>Description</small>
+                <p>{{ exerciseDescription }}</p>
+            </div>
+            <button @click="handleCloseModal">Close <i class="fa-solid fa-xmark"></i></button>
+        </div>
+    </Portal>
 <section id="workout-card">
     <div class="plan-card card">
         <div class="plan-card-header">
@@ -21,13 +46,15 @@ const { workout, warmup } = workoutProgram[selectedWorkout]
         <div class="workout-grid-row" v-for="(w, wIdx) in warmup" :key="wIdx">
             <div class="grid-name">
                 <p>{{ w.name }}</p>
-                <button>
+                <button @click= "() => {
+                    selectedExercise = w.name
+                }">
                     <i class="fa-regular fa-circle-question"></i>
                 </button>
             </div>
             <p>{{ w.sets }}</p>
             <p>{{ w.reps }}</p>
-            <input class="grid-weights" placeholder="14kg" type="text" disabled>
+            <input v-model="data[selectedWorkout][w.name]" class="grid-weights" placeholder="14kg" type="text" disabled>
         </div>
         <div class="workout-grid-line"></div>
 
@@ -38,7 +65,9 @@ const { workout, warmup } = workoutProgram[selectedWorkout]
         <div class="workout-grid-row" v-for="(w, wIdx) in workout" :key="wIdx">
             <div class="grid-name">
                 <p>{{ w.name }}</p>
-                <button>
+                <button @click= "() => {
+                    selectedExercise = w.name
+                }">
                     <i class="fa-regular fa-circle-question"></i>
                 </button>
             </div>
@@ -134,6 +163,18 @@ const { workout, warmup } = workoutProgram[selectedWorkout]
   grid-column: span 7 / span 7;
 }
 
+.exercise-description {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+}
 
+.exercise-description h3 {
+    text-transform: capitalize;
+}
 
+.exercise-description button i {
+    padding-left: 0.5rem
+}
 </style>

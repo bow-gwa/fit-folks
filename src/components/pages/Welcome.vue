@@ -1,4 +1,7 @@
 <script setup>
+   defineProps({
+    handleChangeDisplay: Function
+   }) 
 </script>
 
 <template>
