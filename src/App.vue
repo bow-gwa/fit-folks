@@ -3,7 +3,7 @@ import Welcome from './components/pages/Welcome.vue';
 import Dashboard from './components/pages/Dashboard.vue';
 import Layout from './components/layouts/Layout.vue';
 import Workout from './components/pages/Workout.vue'
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { workoutProgram } from './utils';
 
 const defaultData = {}
@@ -29,6 +29,20 @@ const isWorkoutComplete = computed(() => {
    const isCompleteCheck = Object.values(currWorkout).every(ex => !!ex)
    console.log("ISCOMPLETE: ", isCompleteCheck)
    return isCompleteCheck
+})
+
+const firstIncompleteWorkoutIndex = computed(() => {
+   const allWorkouts = data.value
+   if (!allWorkouts) { return -1 }
+
+   //loop over every key value pair, and check if the workout is complete or not
+   for (const [index, workout] of Object.entries(allWorkouts)) {
+      const isComplete = Object.values(workout).every(ex => !!ex)
+      if (!isComplete) {
+         return parseInt(index)
+      }
+   }
+   return -1 // all are complete
 })
 
 function handleChangeDisplay(idx) {
@@ -60,10 +74,15 @@ function handleSaveWorkout() {
     <Welcome :handleChangeDisplay="handleChangeDisplay" v-if="selectedDisplay == 1" />
 
    <!-- PAGE 2 -->
-    <Dashboard :handleSelectWorkout="handleSelectWorkout" v-if="selectedDisplay == 2" />
+    <Dashboard 
+    :firstIncompleteWorkoutIndex="firstIncompleteWorkoutIndex"
+    :handleSelectWorkout="handleSelectWorkout" v-if="selectedDisplay == 2" />
 
    <!-- PAGE 3 -->
-    <Workout :data="data" :selectedWorkout="selectedWorkout" v-if="workoutProgram?.[selectedWorkout]" />
+    <Workout 
+    :handleSaveWorkout="handleSaveWorkout"
+    :isWorkoutComplete="isWorkoutComplete"
+    :data="data" :selectedWorkout="selectedWorkout" v-if="workoutProgram?.[selectedWorkout]" />
    </Layout>  
     
 
