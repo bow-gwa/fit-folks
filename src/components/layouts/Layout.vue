@@ -4,7 +4,7 @@
 
 <template>
     <header>
-        <h1 class="text-gradient">BODY TRAIN</h1>
+        <h1 class="text-gradient">FIT FOLX</h1>
     </header>
     <main>
         <slot />

@@ -58,7 +58,11 @@ const exerciseDescription = computed(() => exerciseDescriptions[selectedExercise
             </div>
             <p>{{ w.sets }}</p>
             <p>{{ w.reps }}</p>
-            <input v-model="data[selectedWorkout][w.name]" class="grid-weights" placeholder="14kg" type="text" disabled>
+
+            <input class="grid-weights" placeholder="14kg" type="text" disabled/>
+            <!-- the commented out code above is his version of the line below. note that it is different. mine has stuff that his doesn't  -->
+
+            <!-- <input v-model="data[selectedWorkout][w.name]" class="grid-weights" placeholder="14kg" type="text" disabled> -->
         </div>
         <div class="workout-grid-line"></div>
 
@@ -77,7 +81,10 @@ const exerciseDescription = computed(() => exerciseDescriptions[selectedExercise
             </div>
             <p>{{ w.sets }}</p>
             <p>{{ w.reps }}</p>
-            <input class="grid-weights" placeholder="14kg" type="text">
+
+            <input v-model="data[selectedWorkout][w.name]" class="grid-weights" placeholder="14kg" type="text"/>
+        <!-- his code is as above, mine is as below. they're different could it be that i got mixed up and put the above code in the wrong place (at line 61 instead of down here)? -->
+            <!-- <input class="grid-weights" placeholder="14kg" type="text"> -->
         </div>
         <div class="card workout-btns">
             <button @click="handleSaveWorkout">Save and Exit <i class="fa-solid fa-save"></i></button>
@@ -115,6 +122,13 @@ const exerciseDescription = computed(() => exerciseDescriptions[selectedExercise
 .workout-grid-row,
 .workout-grid-line {
     grid-column: span 7 / span 7;
+}
+
+.workout-grid-line {
+    margin: 0.5rem 0;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--background-muted);
 }
 
 .grid-name {

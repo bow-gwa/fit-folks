@@ -41,6 +41,16 @@ const todaysFact = gymHealthFacts[randomNumber]
     gap: 2rem
 }
 
+/* differences */
+ /* .tip-container {
+        gap: 0.5rem;
+    }
+
+    @media (min-width: 640px) {
+        .tip-container {
+            gap: 1rem;
+        }
+    } */
 
 
 </style>

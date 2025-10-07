@@ -3,7 +3,7 @@ import Welcome from './components/pages/Welcome.vue';
 import Dashboard from './components/pages/Dashboard.vue';
 import Layout from './components/layouts/Layout.vue';
 import Workout from './components/pages/Workout.vue'
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { workoutProgram } from './utils';
 
 const defaultData = {}
@@ -62,10 +62,25 @@ function handleSaveWorkout() {
    selectedDisplay.value = 2
 
    //deselect a workout
-   selectedWorkout = -1
+   selectedWorkout.value = -1
 }
 
+function handleResetPlan (){
+   selectedDisplay.value = 2
+   selectedWorkout.value = -1
+   data.value = defaultData
+   localStorage.removeItem("workouts")
+}
 
+onMounted(() => {
+   if (!localStorage) {return}
+   if (localStorage.getItem("workouts")) {
+      // only enter the if block if we find some data saved to the key workouts in localstorage database
+      const savedData = JSON.parse(localStorage.getItem("workouts"))
+      data.value = savedData
+      selectedDisplay.value = 2 // if they have data, then we don't want them landing on the welcome screen every time they enter the app
+   }
+})
 </script>
 
 <template>
@@ -75,6 +90,7 @@ function handleSaveWorkout() {
 
    <!-- PAGE 2 -->
     <Dashboard 
+    :handleResetPlan="handleResetPlan"
     :firstIncompleteWorkoutIndex="firstIncompleteWorkoutIndex"
     :handleSelectWorkout="handleSelectWorkout" v-if="selectedDisplay == 2" />
 
@@ -82,7 +98,9 @@ function handleSaveWorkout() {
     <Workout 
     :handleSaveWorkout="handleSaveWorkout"
     :isWorkoutComplete="isWorkoutComplete"
-    :data="data" :selectedWorkout="selectedWorkout" v-if="workoutProgram?.[selectedWorkout]" />
+    :data="data" 
+    :selectedWorkout="selectedWorkout" 
+    v-if="workoutProgram?.[selectedWorkout]" />
    </Layout>  
     
 
